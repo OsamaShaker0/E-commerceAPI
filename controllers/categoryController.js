@@ -30,7 +30,7 @@ exports.getCategory = asyncHandler(async (req, res) => {
 // @access  private
 exports.createCategory = asyncHandler(async (req, res) => {
   const name = req.body?.name;
-  if(!req.body?.name){
+  if (!req.body?.name) {
     throw new CustomError(`You must enter category name`, 400);
   }
   let category = await Category.create({ name, slug: slugify(name) });
@@ -44,7 +44,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const name = req.body?.name;
   if (!req.body?.name) {
-   throw new CustomError(`You must enter category name`, 400);
+    throw new CustomError(`You must enter category name`, 400);
   }
   let category = await Category.findOneAndUpdate(
     { _id: id },
@@ -52,20 +52,20 @@ exports.updateCategory = asyncHandler(async (req, res) => {
     { new: true }
   );
   if (!category) {
-    throw new CustomError(`can't find category with id of ${id}`  , 404)
+    throw new CustomError(`can't find category with id of ${id}`, 404);
   }
-  
+
   return res.status(200).json({ category });
 });
 // @desc    update category
-// @route   PUT /api/v1/categories:/id
+// @route   Delete /api/v1/categories:/id
 // @access  private
 
 exports.deleteCategory = asyncHandler(async (req, res) => {
   const id = req.params.id;
   let deletedCategory = await Category.findOneAndDelete({ _id: id });
   if (!deletedCategory) {
-      throw new CustomError(`can't find category with id of ${id}`  , 404)
+    throw new CustomError(`can't find category with id of ${id}`, 404);
   }
   res.status(200).json({ deletedCategory });
 });
