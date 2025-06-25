@@ -7,6 +7,8 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controllers/categoryController");
+const subCategoryRoute = require("./subCategoryRoute");
+router.use("/:categoryId/subcategory", subCategoryRoute);
 
 router.route("/").post(createCategory).get(getCategories);
 router

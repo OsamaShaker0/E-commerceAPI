@@ -2,6 +2,8 @@ const Category = require("../models/Category");
 const slugify = require("slugify");
 const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
+const mongoose = require("mongoose");
+const subCategory = require("../models/subCategory");
 
 // @desc    Get categories
 // @route   GET /api/v1/categories
@@ -63,9 +65,24 @@ exports.updateCategory = asyncHandler(async (req, res) => {
 
 exports.deleteCategory = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  let deletedCategory = await Category.findOneAndDelete({ _id: id });
-  if (!deletedCategory) {
-    throw new CustomError(`can't find category with id of ${id}`, 404);
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    let deletedCategory = await Category.findOneAndDelete(
+      { _id: id },
+      { session }
+    );
+    if (!deletedCategory) {
+      throw new CustomError(`can't find category with id of ${id}`, 404);
+    }
+   
+    await subCategory.deleteMany({ category: deletedCategory._id }, { session });
+    await session.commitTransaction();
+    session.endSession();
+    return res.status(200).json({ deletedCategory });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw err;
   }
-  res.status(200).json({ deletedCategory });
 });

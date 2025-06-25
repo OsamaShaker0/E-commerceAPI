@@ -13,6 +13,9 @@ const CategorySchema = new mongoose.Schema(
       type: String,
       lowercase: true,
     },
+    subCategories: {
+      type: Array,
+    },
     image: String,
   },
   { timestamps: true }
