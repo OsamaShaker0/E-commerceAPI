@@ -3,7 +3,7 @@ const slugify = require("slugify");
 const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const mongoose = require("mongoose");
-const subCategory = require("../models/subCategory");
+const subCategory = require("../models/SubCategory");
 
 // @desc    Get categories
 // @route   GET /api/v1/categories

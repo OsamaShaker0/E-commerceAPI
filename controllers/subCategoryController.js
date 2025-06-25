@@ -1,4 +1,4 @@
-const SubCategory = require("../models/subCategory");
+const SubCategory = require("../models/SubCategory");
 const slugify = require("slugify");
 const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
