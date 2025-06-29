@@ -4,17 +4,26 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const mongoose = require("mongoose");
 const subCategory = require("../models/SubCategory");
-
+const APIFeatures = require("../utils/APIFeature");
 // @desc    Get categories
 // @route   GET /api/v1/categories
 // @access  public
 exports.getCategories = asyncHandler(async (req, res) => {
-  let page = req.query.page * 1 || 1;
-  let limit = req.query.limit || 5;
-  let skip = (page - 1) * limit;
+  const features = new APIFeatures(req, Category)
+    .buildFilter()
+    .sort()
+    .limitFields();
+  await features.paginate();
 
-  let categories = await Category.find().sort().limit(limit).skip(skip);
-  res.status(200).json({ categories, numOfDoc: categories.length });
+  const [query, pagination] = features.getQuery();
+  const categories = await query;
+
+  return res.status(200).json({
+    success: true,
+    count: categories.length,
+    pagination,
+    data: categories,
+  });
 });
 // @desc    Get one category
 // @route   GET /api/v1/categories/:id
@@ -75,8 +84,11 @@ exports.deleteCategory = asyncHandler(async (req, res) => {
     if (!deletedCategory) {
       throw new CustomError(`can't find category with id of ${id}`, 404);
     }
-   
-    await subCategory.deleteMany({ category: deletedCategory._id }, { session });
+
+    await subCategory.deleteMany(
+      { category: deletedCategory._id },
+      { session }
+    );
     await session.commitTransaction();
     session.endSession();
     return res.status(200).json({ deletedCategory });
