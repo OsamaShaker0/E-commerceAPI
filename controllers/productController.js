@@ -4,46 +4,18 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const Category = require("../models/Category");
 const SubCategory = require("../models/SubCategory");
+const { getAll, getOne } = require("./refactorController");
 
-const APIFeatures = require("../utils/APIFeature");
 
 // @desc    Get products
 // @route   GET /api/v1/products
 // @access  public
-exports.getProducts = asyncHandler(async (req, res) => {
-  const features = new APIFeatures(req, Product)
-    .buildFilter()
-    .sort()
-    .limitFields()
-    .populate("category", "name ");
-
-  await features.paginate();
-
-  const [query, pagination] = features.getQuery();
-  const products = await query;
-
-  res.status(200).json({
-    success: true,
-    count: products.length,
-    pagination,
-    data: products,
-  });
-});
+exports.getProducts = getAll(Product, "products");
 
 // @desc    Get one product
 // @route   GET /api/v1/products/:id
 // @access  public
-exports.getProduct = asyncHandler(async (req, res) => {
-  let id = req.params.id;
-  let product = await Product.findOne({ _id: id }).populate({
-    path: "category",
-    select: "name",
-  });
-  if (!product) {
-    throw new CustomError(`can't find product with id of ${id}`, 404);
-  }
-  return res.status(200).json({ product });
-});
+exports.getProduct = getOne(Product, "product");
 // @desc    Create product
 // @route   POST /api/v1/products
 // @access  private

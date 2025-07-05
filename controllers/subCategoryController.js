@@ -4,57 +4,19 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const Category = require("../models/Category");
 const mongoose = require("mongoose");
+const { getAll, getOne } = require("./refactorController");
 
-// nasted route
 // @route     GET /api/v1/categories/categoryId/subcategories
 // @desc      get subcategories
 // @route     GET /api/v1/subcategories
 // @access    public
 
-exports.getSubCategories = asyncHandler(async (req, res) => {
-  if (!req.params.categoryId) {
-    let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 5;
-    let skip = (page - 1) * limit;
-    let subcategories = await SubCategory.find({})
-      .sort({ name: 1 })
-      .skip(skip)
-      .limit(limit);
-    return res.status(200).json({
-      subcategories,
-      numOfDoc: subcategories.length,
-    });
-  }
-
-  // get sub categories for category
-  if (req.params.categoryId) {
-    const { categoryId } = req.params;
-    let category = await Category.findOne({ _id: categoryId });
-
-    if (!category) {
-      throw new CustomError(`invalid id`);
-    }
-    return res.status(200).json({
-      subcategories: category.subCategories,
-    });
-  }
-});
+exports.getSubCategories = getAll(SubCategory, "subCategories");
 
 // @desc      get subcategory
 // @route     GET /api/v1/subcategories/:id
 // @access    public
-exports.getSubCategory = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  let subcategory = await SubCategory.findOne({ _id: id }).populate({
-    path: "category",
-    select: "name",
-  });
-  if (!subcategory) {
-    throw new CustomError(`Can Not Find sub category with id ${id}`);
-  }
-  res.status(200).json({ subcategory });
-});
+exports.getSubCategory = getOne(SubCategory, "subCategory");
 
 // @desc      craete subcategory
 // @route     POST /api/v1/subcategories

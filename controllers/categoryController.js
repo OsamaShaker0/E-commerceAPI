@@ -4,38 +4,16 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const mongoose = require("mongoose");
 const subCategory = require("../models/SubCategory");
-const APIFeatures = require("../utils/APIFeature");
+
+const { getAll, getOne } = require("./refactorController");
 // @desc    Get categories
 // @route   GET /api/v1/categories
 // @access  public
-exports.getCategories = asyncHandler(async (req, res) => {
-  const features = new APIFeatures(req, Category)
-    .buildFilter()
-    .sort()
-    .limitFields();
-  await features.paginate();
-
-  const [query, pagination] = features.getQuery();
-  const categories = await query;
-
-  return res.status(200).json({
-    success: true,
-    count: categories.length,
-    pagination,
-    data: categories,
-  });
-});
+exports.getCategories = getAll(Category, "categories");
 // @desc    Get one category
 // @route   GET /api/v1/categories/:id
 // @access  public
-exports.getCategory = asyncHandler(async (req, res) => {
-  let id = req.params.id;
-  let category = await Category.findOne({ _id: id });
-  if (!category) {
-    throw new CustomError(`can't find category with id of ${id}`, 404);
-  }
-  return res.status(200).json(category);
-});
+exports.getCategory = getOne(Category, "category");
 // @desc    Create category
 // @route   POST /api/v1/categories
 // @access  private

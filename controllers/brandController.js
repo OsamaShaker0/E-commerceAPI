@@ -1,42 +1,18 @@
 const Brand = require("../models/Brand");
+const {getAll , getOne} = require('./refactorController')
 const slugify = require("slugify");
 const CustomError = require("../utils/CustomError");
 const asyncHandler = require("../middlewares/asyncHandler");
-const APIFeatures = require("../utils/APIFeature");
 
 // @desc    Get brands
 // @route   GET /api/v1/brands
 // @access  public
-exports.getBrands = asyncHandler(async (req, res) => {
-  const features = new APIFeatures(req, Brand)
-    .buildFilter()
-    .sort()
-    .limitFields();
-  await features.paginate();
-
-  const [query, pagination] = features.getQuery();
-  const brands = await query;
-
-  return res.status(200).json({
-    success: true,
-    count: brands.length,
-    pagination,
-    data: brands,
-  });
-});
+exports.getBrands = getAll(Brand , 'brands')
 
 // @desc    Get brand
 // @route   GET /api/v1/brands/:id
 // @access  public
-exports.getBrand = asyncHandler(async (req, res) => {
-  let { id } = req.params;
-  let brand = await Brand.findOne({ _id: id });
-  if (!brand) {
-    throw new CustomError(`There are no brand with id ${id}`, 404);
-  }
-  return res.status(200).json({ brand });
-});
-
+exports.getBrand = getOne(Brand , 'brand')
 // @desc    create brand
 // @route   POST /api/v1/brands
 // @access  private
