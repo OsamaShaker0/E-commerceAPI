@@ -4,8 +4,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const Category = require("../models/Category");
 const SubCategory = require("../models/SubCategory");
-const { getAll, getOne } = require("./refactorController");
-
+const { getAll, getOne, addImage } = require("./refactorController");
 
 // @desc    Get products
 // @route   GET /api/v1/products
@@ -107,4 +106,33 @@ exports.deleteProduct = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({ deletedProducts });
+});
+// @desc    update product cover image
+// @route   POST /api/v1/products:/id/coverimage
+// @access  private
+exports.addSinglePhoto = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+ console.log('h')
+
+  const product = await Product.findOne({ _id: id });
+  if (!product) {
+    throw new CustomError(`No product with Id ${id}`);
+  }
+  product.coverImage = req.file.path;
+  product.save();
+  res.status(201).json({ msg: "cover image added for the product" });
+});
+
+// @desc    update product images
+// @route   POST /api/v1/products:/id/images
+// @access  private
+exports.addMultiplePhotos = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const product = await Product.findOne({ _id: id });
+  if (!product) {
+    throw new CustomError(`No product with Id ${id}`);
+  }
+  product.images = req.files.map((item) => item.path);
+  product.save();
+  res.status(201).json({ msg: " images added for the product" });
 });

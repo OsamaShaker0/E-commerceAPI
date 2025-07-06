@@ -1,5 +1,5 @@
 const Brand = require("../models/Brand");
-const {getAll , getOne} = require('./refactorController')
+const {getAll , getOne , addSingleImage} = require('./refactorController')
 const slugify = require("slugify");
 const CustomError = require("../utils/CustomError");
 const asyncHandler = require("../middlewares/asyncHandler");
@@ -20,6 +20,7 @@ exports.createBrand = asyncHandler(async (req, res) => {
   if (!req.body?.name) {
     throw new CustomError(`You must enter brand name `, 400);
   }
+  req.body.slug = slugify(req.body.name)
   let createdBrand = await Brand.create(req.body);
 
   return res.status(201).json({ createdBrand });
@@ -51,3 +52,8 @@ exports.deleteBrand = asyncHandler(async (req, res) => {
   let deletedBrand = await Brand.findOneAndDelete({ _id: id });
   return res.status(200).json({ deletedBrand });
 });
+// @desc    add image
+// @route   POST /api/v1/brands/:id/image
+// @access  private
+
+exports.addImage = addSingleImage(Brand , "brand")

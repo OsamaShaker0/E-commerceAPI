@@ -30,4 +30,19 @@ exports.getOne = (Model, modelName = "") =>
     return res.status(200).json(modelName);
   });
 
-  
+exports.addSingleImage = (Model, modelName ) =>
+  asyncHandler(async (req, res) => {
+    let id = req.params.id;
+    const modelName = await Model.findOne({ _id: id });
+    if (!modelName) {
+      throw new CustomError(`can't find ${modelName} with id of ${id}`, 404);
+    }
+     console.log(modelName)
+    if (!req.file?.path) {
+      throw new CustomError("please add image with correct body type", 400);
+    }
+    modelName.editProperty = req.file.path;
+    console.log(modelName)
+    modelName.save();
+    res.status(201).json({ msg: " image added " });
+  });

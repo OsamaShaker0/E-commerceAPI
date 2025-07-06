@@ -4,7 +4,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const CustomError = require("../utils/CustomError");
 const Category = require("../models/Category");
 const mongoose = require("mongoose");
-const { getAll, getOne } = require("./refactorController");
+const { getAll, getOne ,addSingleImage } = require("./refactorController");
 
 // @route     GET /api/v1/categories/categoryId/subcategories
 // @desc      get subcategories
@@ -120,3 +120,7 @@ exports.deleteSubCategory = asyncHandler(async (req, res) => {
     throw error;
   }
 });
+// @desc    add image
+// @route   POST /api/v1/categories/:id/image
+// @access  private
+exports.addImage = addSingleImage(SubCategory , "subcategory")

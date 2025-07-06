@@ -5,7 +5,7 @@ const CustomError = require("../utils/CustomError");
 const mongoose = require("mongoose");
 const subCategory = require("../models/SubCategory");
 
-const { getAll, getOne } = require("./refactorController");
+const { getAll, getOne, addSingleImage } = require("./refactorController");
 // @desc    Get categories
 // @route   GET /api/v1/categories
 // @access  public
@@ -14,6 +14,22 @@ exports.getCategories = getAll(Category, "categories");
 // @route   GET /api/v1/categories/:id
 // @access  public
 exports.getCategory = getOne(Category, "category");
+
+// @desc    Get sub categories for  category
+// @route   GET /api/v1/categories/:id/subcategory
+// @access  public
+exports.getSubCategoriesForCategory = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const category = await Category.findOne({ _id: id });
+  if (!category) {
+    throw new CustomError(`can't find category with id of ${id}`, 404);
+  }
+  let subCategories = category.subCategories
+  if(subCategories.length == 0) {
+    return res.status(200).json({msg:`this category has no sub categories`})
+  }
+  res.status(200).json({subCategories:{count:subCategories.length , mainCategoryName:category.name , mainCategoryId: category._id,subCategories}})
+});
 // @desc    Create category
 // @route   POST /api/v1/categories
 // @access  private
@@ -76,3 +92,7 @@ exports.deleteCategory = asyncHandler(async (req, res) => {
     throw err;
   }
 });
+// @desc    add image
+// @route   POST /api/v1/categories/:id/image
+// @access  private
+exports.addImage = addSingleImage(Category, "ategory");
