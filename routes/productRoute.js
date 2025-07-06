@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const addPhoto = require("../middlewares/addPhoto");
-const storage = addPhoto(`./uploads/products`);
-const upload = multer({ storage });
+const upload = addPhoto(`./uploads/products`);
+
 
 const {
   getProducts,

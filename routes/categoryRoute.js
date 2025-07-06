@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const addPhoto = require("../middlewares/addPhoto");
-const storage = addPhoto(`./uploads/categories`);
-const upload = multer({ storage });
+const upload = addPhoto(`./uploads/categories`);
 const {
   createCategory,
   getCategories,

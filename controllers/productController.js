@@ -112,14 +112,12 @@ exports.deleteProduct = asyncHandler(async (req, res) => {
 // @access  private
 exports.addSinglePhoto = asyncHandler(async (req, res) => {
   const { id } = req.params;
- console.log('h')
-
   const product = await Product.findOne({ _id: id });
   if (!product) {
     throw new CustomError(`No product with Id ${id}`);
   }
   product.coverImage = req.file.path;
-  product.save();
+  await product.save();
   res.status(201).json({ msg: "cover image added for the product" });
 });
 
@@ -133,6 +131,6 @@ exports.addMultiplePhotos = asyncHandler(async (req, res) => {
     throw new CustomError(`No product with Id ${id}`);
   }
   product.images = req.files.map((item) => item.path);
-  product.save();
+  await product.save();
   res.status(201).json({ msg: " images added for the product" });
 });
