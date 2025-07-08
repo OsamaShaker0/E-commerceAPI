@@ -10,9 +10,9 @@ const {
   getBrand,
   updateBrand,
   deleteBrand,
-  addImage
+  addImage,
 } = require("../controllers/brandController");
-router.route('/:id/image').put( upload.single('image'),addImage);
+router.route("/:id/image").put(upload.single("image"), addImage);
 
 router.route("/").get(getBrands).post(createBrand);
 router.route("/:id").get(getBrand).put(updateBrand).delete(deleteBrand);

@@ -10,12 +10,12 @@ const addPhoto = (path) => {
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
       }
-    
-      if (req.method === 'PUT' || req.method === 'POST') {
-        if (Array.isArray(req.files) && file.fieldname !== 'images') {
+
+      if (req.method === "PUT" || req.method === "POST") {
+        if (Array.isArray(req.files) && file.fieldname !== "images") {
           return cb(new CustomError("files Must be Photos", 400), null);
         }
-        if (!Array.isArray(req.files) && file.fieldname !== 'image') {
+        if (!Array.isArray(req.files) && file.fieldname !== "image") {
           return cb(new CustomError("file Must be Photo", 400), null);
         }
       }

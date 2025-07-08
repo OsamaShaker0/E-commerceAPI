@@ -11,8 +11,7 @@ exports.getAll = (Model, modelName = "") =>
     await features.paginate();
 
     const [query, pagination] = features.getQuery();
-    const modelName = await query;
-
+    modelName = await query.select("-password");
     return res.status(200).json({
       success: true,
       count: modelName.length,
@@ -23,26 +22,27 @@ exports.getAll = (Model, modelName = "") =>
 exports.getOne = (Model, modelName = "") =>
   asyncHandler(async (req, res) => {
     let id = req.params.id;
-    let modelName = await Model.findOne({ _id: id });
+    let name = modelName;
+    modelName = await Model.findOne({ _id: id }).select("-password");
     if (!modelName) {
-      throw new CustomError(`can't find ${modelName} with id of ${id}`, 404);
+      throw new CustomError(`can't find ${name} with id of ${id}`, 404);
     }
     return res.status(200).json(modelName);
   });
 
-exports.addSingleImage = (Model, modelName ) =>
+exports.addSingleImage = (Model, modelName) =>
   asyncHandler(async (req, res) => {
     let id = req.params.id;
-    const modelName = await Model.findOne({ _id: id });
+    modelName = await Model.findOne({ _id: id });
     if (!modelName) {
       throw new CustomError(`can't find ${modelName} with id of ${id}`, 404);
     }
-     console.log(modelName)
+    // check if file is upload
     if (!req.file?.path) {
       throw new CustomError("please add image with correct body type", 400);
     }
     modelName.editProperty = req.file.path;
-    console.log(modelName)
+    console.log(modelName);
     modelName.save();
     res.status(201).json({ msg: " image added " });
   });
