@@ -34,7 +34,6 @@ exports.createUser = asyncHandler(async (req, res) => {
   }
 
   if (req.file.fieldname == "image") {
-   
     if (!req.file.mimetype.startsWith("image")) {
       throw new CustomError("file must be image", 400);
     }
@@ -43,7 +42,7 @@ exports.createUser = asyncHandler(async (req, res) => {
   req.slug = slugify(req.body.name);
   let user = await User.create(req.body);
   user = user.toObject();
-  delete user.password;
+  delete user.pass;
   delete user.passwordConfirm;
   res.status(201).json({
     success: true,
@@ -86,7 +85,7 @@ exports.updateUserPassword = asyncHandler(async (req, res) => {
   }
   const { currentPassword, newPassword, confirmPassword } = req.body;
   let user = await User.findById(req.params.id);
-  console.log(currentPassword);
+
   if (!user) {
     throw new CustomError(`No user With id ${req.params.id}`, 404);
   }
@@ -104,6 +103,7 @@ exports.updateUserPassword = asyncHandler(async (req, res) => {
     );
   }
   user.password = newPassword;
+  user.passwordChangedAt = Date.now();
   await user.save();
   res
     .status(200)
@@ -140,4 +140,11 @@ exports.updateUserPhoto = asyncHandler(async (req, res) => {
   user.profilePicture = req.file.path;
   await user.save();
   res.status(200).json({ msg: "User profile picture updated " });
+});
+// @desc   get current user
+// @route  GET /api/v1/users/getme
+// @access Private/Admin/same user
+exports.getMe = asyncHandler(async (req, res) => {
+  let user = await User.findById(req.user._id).select("-password ");
+  res.status(200).json({ success: true, data: user });
 });

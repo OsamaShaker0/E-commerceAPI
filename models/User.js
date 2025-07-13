@@ -1,5 +1,7 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -33,6 +35,10 @@ const UserSchema = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters long"],
       select: true, // Exclude password from queries by default
     },
+    passwordChangedAt: Date,
+    passwordRestCode: String,
+    passwordRestExpire: Date,
+    passwordResetVerify: Boolean,
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -48,7 +54,7 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+// hash password
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
@@ -57,9 +63,32 @@ UserSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-
+// compare passwords
 UserSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
-
+// create token
+UserSchema.methods.getToken = function () {
+  let token = jwt.sign(
+    {
+      userId: this._id,
+      userName: this.name,
+      userEmail: this.email,
+      userRole: this.role,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
+  return token;
+};
+// generate code
+UserSchema.methods.generateCode = function () {
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  return code;
+};
+// hash code
+UserSchema.methods.hashCode = function (code) {
+  let hash = crypto.createHash("sha256").update(code).digest("hex");
+  return hash;
+};
 module.exports = mongoose.model("User", UserSchema);
