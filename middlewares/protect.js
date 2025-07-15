@@ -2,6 +2,7 @@ const CustomError = require("../utils/CustomError");
 const asyncHandler = require("./asyncHandler");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Review = require("../models/Review");
 exports.protect = asyncHandler(async (req, res, next) => {
   if (!req?.headers?.authorization) {
     return next(
@@ -60,11 +61,26 @@ exports.authorize = (...roles) => {
 };
 
 exports.checkSame = (req, res, next) => {
-  console.log(req);
   if (req.user.role == "admin") {
     return next();
   }
   if (req.user._id !== req.params.id) {
     return next(new CustomError("Not Authorize To Access ", 401));
   }
+};
+exports.checkSameUserReview = async (req, res, next) => {
+  let review = await Review.findById(req.params.id);
+  if (!review) {
+    throw new CustomError(`There are no review with id ${req.params.id}`, 404);
+  }
+  if (req.user.role == "admin") {
+     req.review = review;
+    return next();
+  }
+
+  if (req.user._id.toString() !== review.user._id.toString()) {
+    return next(new CustomError("Not Authorize To Access ", 401));
+  }
+  req.review = review;
+  next();
 };

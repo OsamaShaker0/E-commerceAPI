@@ -14,6 +14,7 @@ const {
   addSinglePhoto,
   addMultiplePhotos,
 } = require("../controllers/productController");
+const Review = require("../models/Review");
 router
   .route("/:id/images")
   .put(
@@ -22,6 +23,10 @@ router
     upload.array("images", 5),
     addMultiplePhotos
   );
+
+  // nasted route from product to review 
+const reviewRoute = require("./reviewRoute");
+router.use("productId/reviews", reviewRoute);
 
 router
   .route("/:id/coverimage")

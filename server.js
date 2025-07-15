@@ -11,6 +11,7 @@ const brandRoute = require("./routes/brandRoute");
 const productRoute = require("./routes/productRoute");
 const userRoute = require("./routes/userRoute");
 const authRouter = require("./routes/authRoute");
+const reviewRoute = require("./routes/reviewRoute");
 // Middlewares
 app.use(express.json());
 if (process.env.NODE_ENV === "DEV") {
@@ -23,6 +24,7 @@ app.use("/api/v1/brands", brandRoute);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRouter);
+app.use('/api/v1/reviews' , reviewRoute)
 
 app.use(ErrorHandler);
 app.use(notFound);

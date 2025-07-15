@@ -38,7 +38,7 @@ const ProductSchema = new mongoose.Schema(
     colors: [String],
     coverImage: {
       type: String,
-      required:true
+      required: true,
     },
     images: {
       type: [String],
@@ -62,18 +62,28 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
     },
 
-    numberOfResidents: {
+    numReviews: {
       type: Number,
       default: 0,
     },
   },
 
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 ProductSchema.pre(/^find/, function (next) {
   this.populate({ path: "category", select: "name" });
-  next()
+  next();
+});
+
+ProductSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "product",
+  localField: "_id",
+});
+ProductSchema.pre(/^find/, function (next) {
+  this.populate({ path: "reviews" });
+  next();
 });
 
 module.exports = mongoose.model("Product", ProductSchema);
