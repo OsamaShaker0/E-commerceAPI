@@ -44,11 +44,36 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    favorites: [
+    wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
         default: [],
+      },
+    ],
+    addresses: [
+      {
+        id: { type: mongoose.Schema.Types.ObjectId },
+        alias: {
+          type: String,
+          required: [true, "please provide address name"],
+          unique: [true],
+        },
+        details: {
+          type: String,
+          required: [true, "we need decsription for your address"],
+          minlength: [10, "Details can not be less than 10 char"],
+          maxlength: [50, "Details can not be more than 50 char"],
+        },
+        phoneNumber: {
+          type: String,
+          required: [true, "please add phone number"],
+        },
+        city: { type: String, required: [true, "please add location city"] },
+        postalCode: {
+          type: String,
+          required: [true, "please add your postal code"],
+        },
       },
     ],
   },
