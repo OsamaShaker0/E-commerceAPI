@@ -37,9 +37,9 @@ exports.createAddress = asyncHandler(async (req, res) => {
   let user = req.user;
   let userAddresses = user.addresses;
   let isExist = userAddresses.find(
-    (address) => (address.alias === req?.body?.alias)
+    (address) => address.alias === req?.body?.alias
   );
-  console.log(isExist)
+  console.log(isExist);
   if (isExist) {
     throw new CustomError(`address alias must be unique`, 400);
   }
