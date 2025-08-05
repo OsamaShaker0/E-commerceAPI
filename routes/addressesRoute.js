@@ -5,7 +5,7 @@ const {
   getAddresses,
   createAddress,
   deleteAddress
-} = require("../controllers/addressControler");
+} = require("../controllers/addressController");
 const { protect } = require("../middlewares/protect");
 router.route("/").get(protect, getAddresses).post(protect, createAddress);
 router.route("/:id").delete(protect, deleteAddress);
