@@ -15,6 +15,7 @@ const reviewRoute = require("./routes/reviewRoute");
 const wishlistRoute = require("./routes/wishlistRoute");
 const addressestRoute = require("./routes/addressesRoute");
 const couponRoute = require('./routes/couponRoute')
+const cartRoute = require('./routes/cartRoute')
 // Middlewares
 app.use(express.json());
 if (process.env.NODE_ENV === "DEV") {
@@ -31,6 +32,7 @@ app.use("/api/v1/reviews", reviewRoute);
 app.use("/api/v1/wishlist", wishlistRoute);
 app.use("/api/v1/addresses", addressestRoute);
 app.use('/api/v1/coupons' , couponRoute)
+app.use('/api/v1/cart' , cartRoute)
 app.use(ErrorHandler);
 app.use(notFound);
 // start server and db

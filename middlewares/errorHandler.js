@@ -1,4 +1,5 @@
 const ErrorHandler = (err, req, res, next) => {
+  console.log(err)
   if (err.name === "CastError") {
     err.message = "Resource Not Found";
     err.statusCode = 404;

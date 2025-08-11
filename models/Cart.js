@@ -7,7 +7,10 @@ const CartSchema = new mongoose.Schema(
           type: mongoose.Schema.ObjectId,
           ref: "product",
         },
-        quantity: Number,
+        quantity: {
+          type: Number,
+          default: 1,
+        },
         color: String,
         price: Number,
       },
@@ -21,5 +24,13 @@ const CartSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// calulate total price
+CartSchema.pre("save", function () {
+  let totalPrice = 0;
+  this.totalCartPrice = this.cartItems.forEach((item) => {
+    totalPrice += item.price * item.quantity;
+  });
+  this.totalCartPrice = totalPrice;
+});
 
 module.exports = mongoose.model("Cart", CartSchema);
