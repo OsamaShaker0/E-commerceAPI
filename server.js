@@ -3,8 +3,7 @@ const cors = require("cors");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
-const xss = require("xss-clean");
-const mongoSanitize = require("express-mongo-sanitize");
+
 const hpp = require("hpp");
 const app = express();
 const morgan = require("morgan");
@@ -35,8 +34,6 @@ app.use(limiter);
 app.use(helmet());
 app.use(cors());
 app.use(compression());
-app.use(xss());
-app.use(mongoSanitize());
 app.use(hpp());
 // Mount Routes
 app.use("/api/v1/categories", categoryRoute);
