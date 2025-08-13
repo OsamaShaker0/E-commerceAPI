@@ -62,7 +62,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
 
   return res.status(200).json({ category });
 });
-// @desc    update category
+// @desc    delete category
 // @route   Delete /api/v1/categories:/id
 // @access  private
 
@@ -95,4 +95,4 @@ exports.deleteCategory = asyncHandler(async (req, res) => {
 // @desc    add image
 // @route   POST /api/v1/categories/:id/image
 // @access  private
-exports.addImage = addSingleImage(Category, "ategory");
+exports.addImage = addSingleImage(Category, "category");

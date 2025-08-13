@@ -6,7 +6,7 @@ const Category = require("../models/Category");
 const mongoose = require("mongoose");
 const { getAll, getOne ,addSingleImage } = require("./refactorController");
 
-// @route     GET /api/v1/categories/categoryId/subcategories
+
 // @desc      get subcategories
 // @route     GET /api/v1/subcategories
 // @access    public

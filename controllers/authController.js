@@ -49,7 +49,7 @@ exports.signup = asyncHandler(async (req, res) => {
 });
 
 // @desc     login user
-// @route    POST /api/v1/auth/login
+// @route    POST/api/v1/auth/login
 // @access   public
 
 exports.login = asyncHandler(async (req, res) => {

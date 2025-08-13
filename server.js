@@ -1,4 +1,5 @@
 const express = require("express");
+const { swaggerUi, swaggerSpec } = require('./docs/swagger');
 const cors = require("cors");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
@@ -35,6 +36,7 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(hpp());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Mount Routes
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/subcategories", subCategoryRoute);

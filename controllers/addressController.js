@@ -50,8 +50,8 @@ exports.createAddress = asyncHandler(async (req, res) => {
     addresses: userAddresses[userAddresses.length - 1],
   });
 });
-// @desc    delete product from  wishlist
-// @route   DELETE/api/v1/wishlist
+// @desc    delete addresses
+// @route   DELETE/api/v1/:id
 // @access  private/ protect
 exports.deleteAddress = asyncHandler(async (req, res) => {
   let { id } = req.params;

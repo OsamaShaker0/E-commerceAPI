@@ -16,14 +16,10 @@ exports.getProducts = getAll(Product, "products");
 // @access  public
 exports.getProduct = getOne(Product, "product");
 // @desc    Create product
-// @route   POST /api/v1/products
+// @route   POST/api/v1/products
 // @access  private
 exports.createProduct = asyncHandler(async (req, res) => {
-  //   const title = req.body?.title;
-  //   const description = req.body?.description;
-  //   const quantity = req.body?.quantity;
-  //   const price = req.body?.price;
-  //   const category = req.body?.category;
+ 
   if (!req.body) {
     throw new CustomError(`Missing inputs`, 400);
   }
