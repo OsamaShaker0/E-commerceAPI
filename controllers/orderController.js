@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 const asyncHandler = require("../middlewares/asyncHandler");
@@ -31,7 +32,7 @@ exports.createCashOrder = asyncHandler(async (req, res) => {
   let addressIdx = req.user.addresses.findIndex(
     (address) => address.alias == shippingAddress
   );
-  console.log(addressIdx);
+
   if (addressIdx == -1) {
     throw new CustomError(`address with alias ${shippingAddress} not found`);
   }
@@ -124,4 +125,70 @@ exports.updateOrderToDeliverd = asyncHandler(async (req, res) => {
   order.deliveredAt = Date.now();
   await order.save();
   res.status(200).json({ success: true, msg: `deliver status is updated ` });
+});
+
+// @desc     get checkout session from stripe and send response
+// @route    GET/api/v1/orders/checkout-session/:cartId
+// @access   private/user
+exports.checkoutSession = asyncHandler(async (req, res) => {
+  // app setting
+  let taxPrice = 0;
+  let shippingPrice = 0;
+  // 1- get cart using cart id
+  let { cartId } = req.params;
+  let { shippingAddress } = req.body;
+  if (!shippingAddress) {
+    throw new CustomError(`you must add shipping address `, 400);
+  }
+  let cart = await Cart.findOne({ _id: cartId });
+  if (!cart) {
+    throw new CustomError(`No cart with id of ${cartId}`, 404);
+  }
+  // 2- calulate total order price and get shipping address
+  let cartPrice = cart.totalPriceAfterDiscount
+    ? cart.totalPriceAfterDiscount
+    : cart.totalCartPrice;
+
+  let totalOrderPrice = cartPrice + shippingPrice + taxPrice;
+  let addressIdx = req.user.addresses.findIndex(
+    (address) => address.alias == shippingAddress
+  );
+  if (addressIdx == -1) {
+    throw new CustomError(
+      `address with alias ${req.body.shippingAddress} not in user adresses list`,
+      400
+    );
+  }
+  const selectedAddress = req.user.addresses[addressIdx];
+  // 3- create  stripe checkout session order
+
+  let session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: "egp",
+          product_data: {
+            name: "product",
+          },
+          unit_amount: Math.round(totalOrderPrice * 100),
+        },
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    customer_email: req.user.email,
+    success_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
+    cancel_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
+    client_reference_id: cart._id.toString(),
+    metadata: {
+      addressAlias: selectedAddress.alias || "",
+      city: selectedAddress.city || "",
+      street: selectedAddress.street || "",
+      details: selectedAddress.details || "",
+      phone: selectedAddress.phone || "",
+      userId: req.user._id.toString(),
+    },
+  });
+  // 3- send session to response
+  res.status(200).json({ success: true, session });
 });

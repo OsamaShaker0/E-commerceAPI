@@ -5,10 +5,11 @@ const {
   getAllOrders,
   getSpecificOrder,
   updateOrderToPaid,
-  updateOrderToDeliverd
+  updateOrderToDeliverd,
+  checkoutSession
 } = require("../controllers/orderController");
 const { protect, authorize } = require("../middlewares/protect");
-
+router.get("/checkout-session/:cartId", protect, authorize("user") , checkoutSession);
 router.route("/:cartId").post(protect, authorize("user"), createCashOrder);
 router.put("/:id/pay", updateOrderToPaid);
 router.put("/:id/deliver", updateOrderToDeliverd);
