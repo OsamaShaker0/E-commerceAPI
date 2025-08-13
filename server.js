@@ -1,4 +1,11 @@
 const express = require("express");
+const cors = require("cors");
+const compression = require("compression");
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const mongoSanitize = require("express-mongo-sanitize");
+const hpp = require("hpp");
 const app = express();
 const morgan = require("morgan");
 const connect = require("./db");
@@ -22,6 +29,15 @@ app.use(express.json());
 if (process.env.NODE_ENV === "DEV") {
   app.use(morgan("dev"));
 }
+// some important security packages
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+app.use(limiter);
+app.use(helmet());
+app.use(cors());
+app.use(compression());
+app.use(xss());
+app.use(mongoSanitize());
+app.use(hpp());
 // Mount Routes
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/subcategories", subCategoryRoute);
